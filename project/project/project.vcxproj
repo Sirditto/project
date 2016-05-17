@@ -64,6 +64,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="Question.h" />
+    <ClInclude Include="RecivedMessage.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="TriviaServer.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="Validator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="Question.cpp" />
+    <ClCompile Include="RecivedMessage.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="TriviaServer.cpp" />
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="Validator.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
