@@ -8,6 +8,7 @@
 #include <map>
 #include <mutex>
 #include <queue>
+#include <thread>
 
 #include "User.h"
 #include "DataBase.h"

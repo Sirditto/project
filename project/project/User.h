@@ -22,7 +22,15 @@ public:
 	void send(string);
 	string getUsername();
 	SOCKET getSocket();
-	//
+	Room* getRoom();
+	Game* getGame();
+	void setGame(Game*);
+	void clearRoom();
+	bool createRoom(int string, int, int, int);
+	bool joinRoom(Room*);
+	void leaveRoom();
+	int closeRoom();
+	bool leaveGmae();
 
 
 private:
