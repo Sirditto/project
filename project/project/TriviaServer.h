@@ -1,19 +1,25 @@
 #pragma once
 
 #include <iostream>
-#include <WinSock2.h>
 #include <Windows.h>
+#include <WinSock2.h>
 #include <string>
 #include <vector>
 #include <map>
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <stdio.h>
+#include <stdlib.h>
 
+#include "Helper.h"
+#include "Protocol.h"
 #include "User.h"
 #include "DataBase.h"
 #include "Room.h"
 #include "RecivedMessage.h"
+
+#pragma comment (lib, "Ws2_32.lib")
 
 using namespace std;
 
@@ -37,7 +43,7 @@ private:
 	int static _roomidSequence;
 
 	void bindAndListen();
-	void accept();
+	void acceptClient(); // name was change from accept()
 	void clientHandler(SOCKET);
 	void safeDeleteUser(RecivedMessage*);
 	
