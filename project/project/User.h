@@ -9,6 +9,7 @@
 #include <mutex>
 #include <queue>
 
+#include "Helper.h"
 #include "TriviaServer.h"
 #include "DataBase.h"
 #include "Room.h"
@@ -26,11 +27,12 @@ public:
 	Game* getGame();
 	void setGame(Game*);
 	void clearRoom();
-	bool createRoom(int string, int, int, int);
+	void clearGame();
+	bool createRoom(int, string, int, int, int);
 	bool joinRoom(Room*);
 	void leaveRoom();
 	int closeRoom();
-	bool leaveGmae();
+	bool leaveGame();
 
 
 private:
