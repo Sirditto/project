@@ -22,7 +22,7 @@ public:
 	void send(string);
 	string getUsername();
 	SOCKET getSocket();
-	
+	//
 
 
 private:
