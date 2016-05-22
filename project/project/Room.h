@@ -19,7 +19,7 @@
 class Room
 {
 public:
-	Room(int id, User* admin, string name, int maxUsers, int questionNum, int questionTime);
+	Room(int, User*, string, int, int, int);
 	bool joinRoom(User*);
 	void leaveRoom(User*);
 	int closeRoom(User*);
@@ -37,5 +37,9 @@ private:
 	int _questionNum;
 	string _name;
 	int _id;
+
+	string getUsersAsString(vector<User*>, User*);
+	void sendMessage(string);
+	void sendMessage(User*, string);
 };
 

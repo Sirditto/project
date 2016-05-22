@@ -95,5 +95,21 @@ int User::closeRoom()
 /*leaves game, returns true is successfuly left game, returns false if user is still connected to the game*/
 bool User::leaveGame()
 {
+	//if the user is already inside a game
+	if (_currGame)
+	{
+		if (!_currGame->leaveGame(this)) // leaving game
+			return false; // case game leaving failed
 
+		_currGame = NULL; // setting game pointer to NULL
+		return true;
+	}
+	else
+		return false;
+}
+
+/*setting the room pointer to NULL*/
+void User::clearRoom()
+{
+	_currRoom = NULL;
 }
