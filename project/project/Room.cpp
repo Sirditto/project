@@ -40,13 +40,13 @@ string Room::getUserListMessage()
 	//if the room is empty
 	if (_users.size() == 0)
 	{
-		return "1080";
+		return to_string(USER_IN_ROOM_RESPONSE) + "0";
 	}
 	//is the room isn't empty
 	else
 	{
 		//linking up all the names according to the protocol
-		message = "108" + names.size();
+		message = to_string(USER_IN_ROOM_RESPONSE) + to_string(names.size());
 		for (int i = 0; i < names.size(); i++)
 		{
 			message += std::to_string(names[i].size()) + names[i]; // <name size in bytes><name>
@@ -85,13 +85,13 @@ bool Room::joinRoom(User* user)
 	//checking if the room is full
 	if (_users.size() == _maxUsers)
 	{
-		Helper::sendData(user->getSocket(), "1102"); // sending room joinning fail message
+		Helper::sendData(user->getSocket(), to_string(JOIN_ROOM_RESPONSE) + "2"); // sending room joinning fail message
 		return false;
 	}
 	else
 	{
 		_users.push_back(user); // adding the new user to the room
-		Helper::sendData(user->getSocket(), "1100" + to_string(_questionNum) + to_string(_questionTime));
+		Helper::sendData(user->getSocket(), to_string(JOIN_ROOM_RESPONSE) + "0" + to_string(_questionNum) + to_string(_questionTime));
 		sendMessage(NULL, getUserListMessage()); // sending to new and all other users the current user list in the room (108)
 		return true;
 	}
@@ -111,7 +111,7 @@ void Room::leaveRoom(User* user)
 			_users.erase(_users.begin + i);
 
 			//sending user leaving succes message
-			user->send("1120"); 
+			user->send(to_string(LEAVE_ROOM_RESPONSE) + "0"); 
 
 			//sending user list update message to all the connected users
 			sendMessage(NULL, getUserListMessage());
@@ -125,7 +125,7 @@ int Room::closeRoom(User* user)
 	//checking if the user who requested the room closing is indeed the admin
 	if (user == _admin)
 	{
-		sendMessage(NULL, "116"); // sending room closing message to all the users (including the admin)
+		sendMessage(NULL, to_string(CLOSE_ROOM_RESPONSE)); // sending room closing message to all the users (including the admin)
 
 		for (int i = 0; i < _users.size(); i++)
 		{

@@ -33,7 +33,7 @@ bool User::createRoom(int roomID, string roomName, int maxUsers, int questionsNu
 	if (_currRoom)
 	{
 		//sending to user room creation fail message (message code 114)
-		send("1140");
+		send(to_string(CREATE_ROOM_RESPONSE) + "1");
 		return false; // <-- cause room creation failed
 	}
 	else // case user isn't already in a room
@@ -42,7 +42,7 @@ bool User::createRoom(int roomID, string roomName, int maxUsers, int questionsNu
 		_currRoom = new Room(roomID, this, roomName, maxUsers, questionsNum, questionTime);
 
 		//sending to user room creation success message
-		send("1141");
+		send(to_string(CREATE_ROOM_RESPONSE) + "0");
 		return true; // <-- cause room creation succeeded
 	}
 }
@@ -68,6 +68,7 @@ bool User::joinRoom(Room* newRoom)
 /*leaves room (just setting the room pointer to NULL)*/
 void User::leaveRoom()
 {
+	_currRoom->leaveRoom(this);
 	_currRoom = NULL;
 }
 

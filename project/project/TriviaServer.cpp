@@ -4,7 +4,7 @@
 /*constructor, initialize the main listening socket */
 TriviaServer::TriviaServer() : _socket(INVALID_SOCKET)
 {
-	//start the database constructor
+	_db = *(new DataBase());
 }
 
 
@@ -25,36 +25,32 @@ TriviaServer::~TriviaServer()
 void TriviaServer::server()
 {
 	bindAndListen();
-	SOCKET curr_client_soc = INVALID_SOCKET;
-	thread *t;
+	thread t(&handleRecivedMessages);
+	t.detach();
 
 	//main server loop
 	while (true)
 	{
-		//listen for connecting client
-		if (listen(_socket, SOMAXCONN) == SOCKET_ERROR) {
-			cout << "an error occured while listening for connecting client, error: " + WSAGetLastError() << endl;
-			WSACleanup();
-		}
-
-		// Accept a client socket
-		curr_client_soc = accept(_socket, NULL, NULL);
-		if (curr_client_soc == INVALID_SOCKET) {
-			printf("accept failed with error: %d\n", WSAGetLastError());
-			closesocket(_socket);
-			WSACleanup();
-		}
-		else // case no error occured while accepting the client
-		{
-			//calling clientHandler() to handle the clients requests.
-			t = new thread(clientHandler, curr_client_soc);
-			t->join();
-		}
-		
-
+		acceptClient();
 	}
 
 }
+/*accept a new client*/
+void TriviaServer::acceptClient()
+{
+	SOCKET curr_client_soc = INVALID_SOCKET;
+
+	// Accept a client socket
+	curr_client_soc = accept(_socket, NULL, NULL);
+	if (curr_client_soc == INVALID_SOCKET) {
+		printf("accept failed with error: %d\n", WSAGetLastError());
+		closesocket(_socket);
+		WSACleanup();
+	}
+
+	thread t(&clientHandler, curr_client_soc);
+}
+
 /*binds and listens t*/
 void TriviaServer::bindAndListen()
 {
@@ -102,6 +98,12 @@ void TriviaServer::bindAndListen()
 		WSACleanup();
 	}
 
+	//listen for connecting client
+	if (listen(_socket, SOMAXCONN) == SOCKET_ERROR) {
+		cout << "an error occured while listening for connecting client, error: " + WSAGetLastError() << endl;
+		WSACleanup();
+	}
+
 	freeaddrinfo(result);
 }
 
@@ -112,17 +114,84 @@ void TriviaServer::handleRecivedMessages()
 
 	while (true)
 	{
+		//wait untill queue has requests in it
+		while (!_queRcvMessages.size());
+
 		//saving the first message in the queue
 		curr_msg = _queRcvMessages.front();
 
 		//locking the mutex
-		_mtxRecivedMessages.lock();
+		unique_lock<mutex> lck(_mtxRecivedMessages);
+		lck.lock();
 
 		//poping the request
 		_queRcvMessages.pop();
 
 		//unlocking the mutex
-		_mtxRecivedMessages.unlock();
+		lck.unlock();
+
+		//linking the username to the message
+		curr_msg->setUser(getUserBySocket(curr_msg->getSock()));
+
+	/**************************************************************************************************/
+
+		//if user requests to leave
+		if (curr_msg->getMessageCode() == QUIT_REQUEST)
+			safeDeleteUser(curr_msg); // delete user
+
+		switch (curr_msg->getMessageCode())
+		{
+		//case user requests to sign in
+		case SIGN_IN_REQUEST:
+			handleSignin(curr_msg);
+			break;
+
+		//case user requests to sign up
+		case SIGN_UP_REQUEST:
+			handleSignup(curr_msg);
+			break;
+
+		//case user requests to sign out
+		case SIGN_OUT_REQUEST:
+			handleSignout(curr_msg);
+
+		//case user requests room list
+		case ROOM_LIST_REQUEST:
+			handleGetRooms(curr_msg);
+			break;
+
+		//case user requests list of users in room
+		case USER_IN_ROOM_REQUEST:
+			handleGetUserinRoom(curr_msg);
+			break;
+
+		//case user requests to join an existing room
+		case JOIN_ROOM_REQUEST:
+			handleJoinRoom(curr_msg);
+			break;
+
+		//case user requests to leave room
+		case LEAVE_ROOM_REQUEST:
+			handleLeaveRoom(curr_msg);
+			break;
+
+		//case user requests to create room
+		case CREATE_ROOM_REQUEST:
+			handleCreateRoom(curr_msg);
+			break;
+
+		//case user requests to close room
+		case CLOSE_ROOM_REQUEST:
+			handleCloseRoom(curr_msg);
+			break;
+
+		//case user requests to start game 
+		case START_GAME_REQUEST:
+			handleStartGame(curr_msg);
+			break;
+
+		//case user
+
+		}
 	}
-	
 }
