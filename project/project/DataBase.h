@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include "sqlite3.h"
 #include "Question.h"
 
 using namespace std;
