@@ -139,3 +139,4 @@ int Room::closeRoom(User* user)
 	else
 		return -1;
 }
+
