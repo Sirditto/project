@@ -1,0 +1,11 @@
+﻿  Validator.cpp
+  User.cpp
+  TriviaServer.cpp
+  Room.cpp
+  RecivedMessage.cpp
+  Question.cpp
+  Helper.cpp
+  Game.cpp
+  DataBase.cpp
+  Generating Code...
+LINK : fatal error LNK1561: entry point must be defined
