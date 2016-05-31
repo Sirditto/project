@@ -1,8 +1,12 @@
 #pragma once
+
+#include <iostream>
+#include <string>
+
 class Validator
 {
 public:
-	Validator();
-	~Validator();
+	bool static isPasswordValid(string);
+	bool static isUsernameValid(string);
 };
 

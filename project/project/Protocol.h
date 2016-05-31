@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#define DEFAULT_BUFLEN 100
+#define DEFAULT_BUFLEN 200
 #define DEFAULT_PORT 8080
 
 ///constants.....request means that the message would come from a client and response means the message would come from the server
