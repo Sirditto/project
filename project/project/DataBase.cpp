@@ -7,6 +7,7 @@ char* zErrMsg;
 string errmsg;
 string cmd;
 vector<Question*> questions;
+vector<string> strVec;
 
 
 DataBase::DataBase()
@@ -93,7 +94,7 @@ bool DataBase::isUserExists(string userName)
 		throw exception(errmsg.c_str());
 	}
 
-	if (!atoi(Count.c_str))
+	if (Count == "0")
 		return false;
 	else
 		return true;
@@ -146,7 +147,8 @@ vector<Question*> DataBase::initQuestions(int questionsNo)
 	questions.clear();
 
 	cmd.clear();
-	cmd = "SELECT (*) FROM t_questions";
+	cmd = "SELECT * FROM t_questions ORDER BY RAND() LIMIT ";
+	cmd.append(to_string(questionsNo));
 
 	rc = sqlite3_exec(db, cmd.c_str(), callbackQuestions, 0, &zErrMsg);
 
@@ -161,9 +163,24 @@ vector<Question*> DataBase::initQuestions(int questionsNo)
 	return questions;
 }
 
-vector<string> DataBase::getBestScores()
+vector<string> DataBase::getBestScores(string username)
 {
-	return vector<string>();
+	strVec.clear();
+
+	cmd.clear();
+	cmd = "";
+
+	rc = sqlite3_exec(db, cmd.c_str(), callbackBestScores, 0, &zErrMsg);
+
+	if (rc != SQLITE_OK)
+	{
+		errmsg = "SQL error: ";
+		errmsg.append(zErrMsg);
+		sqlite3_free(zErrMsg);
+		throw exception(errmsg.c_str());
+	}
+
+	return strVec;
 }
 
 vector<string> DataBase::getPersonalStatus(string username)
@@ -173,7 +190,31 @@ vector<string> DataBase::getPersonalStatus(string username)
 
 int DataBase::insertNewGame()
 {
-	return 0;
+	cmd = "INSERT INTO t_games (status, start_time, end_time) VALUES (0, datetime('now'), NULL)";
+
+	rc = sqlite3_exec(db, cmd.c_str(), NULL, 0, &zErrMsg);
+
+	if (rc != SQLITE_OK)
+	{
+		errmsg = "SQL error: ";
+		errmsg.append(zErrMsg);
+		sqlite3_free(zErrMsg);
+		throw exception(errmsg.c_str());
+	}
+
+	cmd = "SELECT MAX(game_id) AS max_id FROM t_games";
+
+	rc = sqlite3_exec(db, cmd.c_str(), callbackCount, 0, &zErrMsg);
+
+	if (rc != SQLITE_OK)
+	{
+		errmsg = "SQL error: ";
+		errmsg.append(zErrMsg);
+		sqlite3_free(zErrMsg);
+		throw exception(errmsg.c_str());
+	}
+
+	return atoi(Count.c_str());
 }
 
 bool DataBase::updateGameStatus(int gameNum)
@@ -197,15 +238,15 @@ int DataBase::callbackCount(void * notUsed, int argc, char ** argv, char ** azCo
 
 int DataBase::callbackQuestions(void * notUsed, int argc, char ** argv, char ** azCol)
 {
-	int i;
+	Question* currQuestion;
 
-	for (i = 0; i < argc; i++)
+	currQuestion = new Question(atoi(argv[0]), argv[1], argv[2], argv[3], argv[4], argv[5]);
+	if (currQuestion)
 	{
-		Question* Que = new Question()
-		questions.insert();
+		questions.push_back(currQuestion);
+		return 0;
 	}
-
-	return 0;
+	return -1;
 }
 
 int DataBase::callbackBestScores(void * notUsed, int argc, char ** argv, char ** azCol)
